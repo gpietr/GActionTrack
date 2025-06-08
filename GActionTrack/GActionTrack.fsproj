@@ -7,8 +7,12 @@
 
   <ItemGroup>
     <Compile Include="Storage.fs" />
-    <Compile Include="Statistics.fs" />
+    <Compile Include="Queries.fs" />
     <Compile Include="Tracking.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LiteDB" Version="5.0.21" />
   </ItemGroup>
 
 </Project>
