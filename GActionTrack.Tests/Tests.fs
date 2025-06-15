@@ -23,8 +23,21 @@ let ``Basic counting works`` () =
         let numberOfSessions = Queries.GetNumberOfSessions()
         Assert.Equal(3, numberOfSessions)
 
-        let users = Queries.GetUsers()
-        Assert.Equal(2, List.length users)
+        let users = Queries.GetUsers() |> List.ofSeq
+        Assert.Equal(2, users.Length)
+
+        let user1 = List.find (fun (u: Queries.UserSummary) -> u.UserId = "user1") users
+        Assert.Equal(2, user1.SessionCount)
+        Assert.Equal(2, user1.ProcedureCount)
+
+        let user1Sessions = Queries.GetSessions (Queries.UserFilter("user1"))
+        Assert.Equal(2, Seq.length user1Sessions)
+        let session1 = Seq.find (fun (s: Queries.SessionSummary) -> s.SessionId = "session1") user1Sessions
+        Assert.Equal(1, session1.ProcedureCount)
+
+
+        let allSessions = Queries.GetSessions(Queries.NoFilter)
+        Assert.Equal(2, Seq.length allSessions)
 
         storage.Clear()
     finally

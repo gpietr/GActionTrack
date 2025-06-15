@@ -18,9 +18,17 @@ public class EndToEndInCSharpTest
             { "Detail2", "Detail B" }
         });
 
-        // Using anonymous types doesn't currently work 
-        //Tracking.Track("User 1", "Session 1", "Procedure 1", "Action 2", new { Detail1 = "Detail C", Detail2 = "Detail D" });
-
         Assert.Equal(1, Queries.GetNumberOfSessions());
+
+        List<Queries.UserSummary> userStatistics = Queries.GetUsers();
+        Assert.Single(userStatistics);
+        Assert.Equal(1, userStatistics[0].SessionCount);
+
+
+        var allSessions = Queries.GetSessions(Queries.NoFilter);
+        Assert.Single(allSessions);
+
+        var user1Sessions = Queries.GetSessions(Queries.UserFilter("User 1"));
+        Assert.Single(user1Sessions);
     }
 }
