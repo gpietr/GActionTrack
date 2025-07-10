@@ -14,10 +14,10 @@ let ``Basic counting works`` () =
 
         Tracking.SetStorage storage
 
-        Tracking.Track ("user1", "session1", "procedure1", "action1", Some (dictOf [ ("test", "ttt"); ("aaa", "bbb") ]))
-        Tracking.Track ("user1", "session1", "procedure1", "action1", Some (dictOf [ ("test", "ttt"); ("aaa", "bbb") ]))
-        Tracking.Track ("user1", "session2", "procedure1", "action1", None)
-        Tracking.Track ("user2", "session1", "procedure1", "action1", None)
+        Tracking.Track ("user1", "session1", "procedure1", "action1", (dictOf [ ("test", "ttt"); ("aaa", "bbb") ]))
+        Tracking.Track ("user1", "session1", "procedure1", "action1", (dictOf [ ("test", "ttt"); ("aaa", "bbb") ]))
+        Tracking.Track ("user1", "session2", "procedure1", "action1", null)
+        Tracking.Track ("user2", "session1", "procedure1", "action1", null)
 
         Queries.SetStorage storage
         let numberOfSessions = Queries.GetNumberOfSessions()

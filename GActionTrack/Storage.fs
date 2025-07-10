@@ -5,11 +5,11 @@ open LiteDB
 type TrackingEntry =
     {
         Timestamp: System.DateTimeOffset
-        UserId: string
+        UserId: string | null
         SessionId: string
-        ProcedureId: string
+        ProcedureId: string | null
         Action: string
-        Parameters: Option<System.Collections.Generic.Dictionary<string, string>>
+        Parameters: System.Collections.Generic.Dictionary<string, string> | null
     }
 
 type ITrackingStorage =
