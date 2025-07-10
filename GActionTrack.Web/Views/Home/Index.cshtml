@@ -1,0 +1,29 @@
+﻿@model IEnumerable<Queries.SessionSummary>
+@{
+    ViewData["Title"] = "Sessions Summary";
+}
+
+<h1>Sessions Summary</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>User Id</th>
+            <th>Session Id</th>
+            <th>Procedure Count</th>
+            <th>First Activity</th>
+            <th>Last Activity</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var session in Model)
+    {
+        <tr>
+            <td>@session.UserId</td>
+            <td>@session.SessionId</td>
+            <td>@session.ProcedureCount</td>
+            <td>@session.FirstActivity.ToString("dd-MM-yy HH:mm")</td>
+            <td>@session.LastActivity.ToString("dd-MM-yy HH:mm")</td>
+        </tr>
+    }
+    </tbody>
+</table>
