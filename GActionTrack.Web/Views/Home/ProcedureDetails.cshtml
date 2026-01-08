@@ -1,0 +1,51 @@
+@model GActionTrack.Web.Controllers.ProcedureDetailsViewModel
+
+@{
+    ViewData["Title"] = "Procedure Details";
+}
+
+<h2>@ViewData["Title"]</h2>
+<p>@Model.Description</p>
+
+@if (Model.Entries.Count == 0)
+{
+    <div>No entries found.</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>User ID</th>
+                <th>Session ID</th>
+                <th>Procedure ID</th>
+                <th>Action</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var entry in Model.Entries)
+        {
+            <tr>
+                <td>@entry.Timestamp.ToString("g")</td>
+                <td>@entry.UserId</td>
+                <td>@entry.SessionId</td>
+                <td>@entry.ProcedureId</td>
+                <td>@entry.Action</td>
+                <td>
+                    <ul>
+                    @if(entry.Parameters != null)
+                    @foreach(var key in entry.Parameters.Keys)
+                    {
+                        <li>
+                            <strong>@key</strong>: @entry.Parameters[key]
+                        </li>
+                    }
+                    </ul>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

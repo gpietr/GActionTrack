@@ -5,6 +5,61 @@ open System.Collections.Generic
 
 let dictOf kvs = Dictionary<string, string>(kvs |> Seq.map (fun (k,v) -> KeyValuePair(k,v)))
 
+
+[<Fact>]
+let ``Procedure going over midnight`` () =
+
+    let dbPath = "tracking.db"
+    try
+        use storage = new Storage.LiteDbTrackingStorage(dbPath)
+
+        Tracking.SetStorage storage
+
+        Tracking.TrackWithTimestamp (System.DateTimeOffset(2024, 6, 1, 23, 50, 0, System.TimeSpan.Zero), "user1", "session1", "procedure1", "action1", null)
+        Tracking.TrackWithTimestamp (System.DateTimeOffset(2024, 6, 2, 0, 10, 0, System.TimeSpan.Zero), "user1", "session1", "procedure1", "action2", null)
+
+        Queries.SetStorage storage
+        let days = Queries.GetProcedureDailyStatistics(Queries.NoFilter) |> List.ofSeq
+        Assert.Equal(1, days.Length) // Count start date only
+
+        let day1 = List.head days
+        Assert.Equal(1, day1.ProcedureCount)
+        Assert.Equal(20, (int)day1.AverageProcedureDuration.TotalMinutes)
+
+        storage.Clear()
+    finally
+        System.IO.File.Delete(dbPath)
+
+[<Fact>]
+let ``Procedure summary works`` () =
+
+    let dbPath = "tracking.db"
+    try
+        use storage = new Storage.LiteDbTrackingStorage(dbPath)
+
+        Tracking.SetStorage storage
+
+        Tracking.TrackWithTimestamp (System.DateTimeOffset(2024, 6, 1, 10, 0, 0, System.TimeSpan.Zero), "user1", "session1", "procedure1", "action1", null)
+        Tracking.TrackWithTimestamp (System.DateTimeOffset(2024, 6, 1, 10, 5, 0, System.TimeSpan.Zero), "user1", "session1", "procedure1", "action2", null)
+        Tracking.TrackWithTimestamp (System.DateTimeOffset(2024, 6, 2, 10, 10, 0, System.TimeSpan.Zero), "user1", "session1", "procedure2", "action1", null)
+        Tracking.TrackWithTimestamp (System.DateTimeOffset(2024, 6, 2, 10, 15, 0, System.TimeSpan.Zero), "user1", "session1", "procedure2", "action2", null)
+        Tracking.TrackWithTimestamp (System.DateTimeOffset(2024, 6, 2, 11, 10, 0, System.TimeSpan.Zero), "user1", "session1", "procedure3", "action1", null)
+        Tracking.TrackWithTimestamp (System.DateTimeOffset(2024, 6, 2, 11, 25, 0, System.TimeSpan.Zero), "user1", "session1", "procedure3", "action2", null)
+
+        Queries.SetStorage storage
+        let days = Queries.GetProcedureDailyStatistics(Queries.NoFilter) |> List.ofSeq
+        Assert.Equal(2, days.Length)
+
+        let day1 = List.head days
+        Assert.Equal(5, (int)day1.AverageProcedureDuration.TotalMinutes)
+
+        let day2 = List.last days
+        Assert.Equal(10, (int)day2.AverageProcedureDuration.TotalMinutes)
+
+        storage.Clear()
+    finally
+        System.IO.File.Delete(dbPath)
+
 [<Fact>]
 let ``Basic counting works`` () =
 

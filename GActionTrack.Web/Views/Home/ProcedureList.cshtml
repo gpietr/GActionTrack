@@ -1,0 +1,30 @@
+@model GActionTrack.Web.Controllers.ProceduresViewModel
+@{
+    ViewData["Title"] = "Procedures";
+    var description = Model.Description;
+    var procedures = Model.Procedures;
+}
+<h1>@description</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Start</th>
+            <th>End</th>
+            <th>Duration (mins)</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var procedure in procedures)
+    {
+        <tr>
+            <td>@procedure.Start.ToString("HH:mm:ss")</td>
+            <td>@procedure.End.ToString("HH:mm:ss")</td>
+            <td>@(Convert.ToInt32(Math.Round((procedure.End - procedure.Start).TotalMinutes)))</td>
+            <td>
+                <a asp-controller="Home" asp-action="ProcedureDetails" asp-route-procedureId="@procedure.Id">View Details</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

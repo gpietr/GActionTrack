@@ -1,6 +1,8 @@
-﻿@model IEnumerable<Queries.SessionSummary>
+﻿@model GActionTrack.Web.Controllers.IndexViewModel
 @{
     ViewData["Title"] = "Sessions Summary";
+    var sessions = Model.Sessions;
+    var timeline = Model.Timeline;
 }
 
 <h1>Sessions Summary</h1>
@@ -15,7 +17,7 @@
         </tr>
     </thead>
     <tbody>
-    @foreach (var session in Model)
+    @foreach (var session in sessions)
     {
         <tr>
             <td>@session.UserId</td>
@@ -27,3 +29,31 @@
     }
     </tbody>
 </table>
+
+<h2>Procedures Timeline</h2>
+<canvas id="timelineChart" width="800" height="300"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const timelineData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(timeline.Select(tp => new { date = tp.Date.ToString("yyyy-MM-dd"), count = tp.ProcedureCount })));
+    const ctx = document.getElementById('timelineChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: timelineData.map(x => x.date),
+            datasets: [{
+                label: 'Procedures per Day',
+                data: timelineData.map(x => x.count),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true,
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                x: { title: { display: true, text: 'Date' } },
+                y: { title: { display: true, text: 'Procedures' }, beginAtZero: true }
+            }
+        }
+    });
+</script>
